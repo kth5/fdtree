@@ -1,4 +1,4 @@
-#!/usr/local/bin/bash
+#!/usr/bin/bash
 ################################################################################
 #                                                                              #
 #        Copyright (c) 2004, The Regents of the University of California       #
@@ -192,7 +192,12 @@ function create_files
 	then
 	    echo -e "\tcreating file("$nf,$file_name")"
 	fi
-	dd if=/dev/zero bs=4096 count=$fsize of=$file_name > /dev/null 2>&1
+	if [ $frandom -eq 0 ]
+	then
+		dd if=/dev/urandom bs=4096 count=$fsize of=$file_name > /dev/null 2>&1
+	else
+		dd if=/dev/zero bs=4096 count=$fsize 2>/dev/null | openssl enc -aes-256-ctr -pass pass:"$(dd if=/dev/urandom bs=128 count=1 2>/dev/null | base64)" -nosalt > $file_name 2>/dev/null
+	fi
 	let nf=$(($nf-1))
     done
 
@@ -266,6 +271,7 @@ declare -i levels=4		# 4 levels in tree
 declare -i dirs_per_level=10	# 10 subdirectories in each directory (fanout)
 declare -i files_per_dir=10	# 10 files in each directory
 declare -i fsize=10		# size of files in file system blocks (4096B)
+declare -i frandom=0		# files should have random content (requires OpenSSL binary in PATH)
 declare -i DEBUG=0		# DEBUG FLAG.  Default is off
 declare -i CREATE_TREE=0	# Create tree flag
 declare -i REMOVE_TREE=0	# Remove tree flag
@@ -277,6 +283,7 @@ while getopts ":l:d:f:s:o:CDR" opt; do
 	d ) dirs_per_level=$OPTARG ;;
 	f ) files_per_dir=$OPTARG ;;
 	s ) fsize=$OPTARG ;;
+	r ) frandom=1 ;;
 	o ) start_dir=$OPTARG ;;
 	C ) CREATE_TREE=1 ;;
 	D ) DEBUG=1 ;;
@@ -292,6 +299,7 @@ while getopts ":l:d:f:s:o:CDR" opt; do
 	     echo -e "\t-f is the number of files to create per directory"
 	     echo -e "\t-o is the starting directory pathname"
 	     echo -e "\t-s is the file size (in blocks, 4096 for Linux, to create)"
+	     echo -e "\t-r files should have random content (requires OpenSSL binary in PATH, SLOW!)"
 	     echo -e ""
 	     echo "WARNING: directories and files created increases polynomically with -l."
 	     echo -e "Be careful, very careful.  Your filesystem may suffer..."
