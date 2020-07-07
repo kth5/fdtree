@@ -29,6 +29,7 @@
 #
 usage="fdtree.bash [-C] [-D] [-R] [-l level_depth] [-d dirs_per_level]
             [-f files_per_dir] [-s size_of_files (in file system blocks)]
+            [-r (random file content)]
             [-o pathname]"
 #
 # sample output
