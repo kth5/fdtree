@@ -39,6 +39,7 @@ fdtree.bash [-C] [-D] [-R] [-l level_depth] [-d dirs_per_level]
 	    -f is the number of files to create per directory
 	    -o is the starting directory pathname
 	    -s is the file size (in blocks, 4096 for Linux, to create)
+	    -r files should have random content (requires OpenSSL binary in PATH, SLOW!)
 
 WARNING: directories and files created increases polynomically with -l.
 Be careful, very careful.  Your filesystem may suffer...
