@@ -194,7 +194,7 @@ function create_files
 	fi
 	if [ $frandom -eq 0 ]
 	then
-		dd if=/dev/urandom bs=4096 count=$fsize of=$file_name > /dev/null 2>&1
+		dd if=/dev/zero bs=4096 count=$fsize of=$file_name > /dev/null 2>&1
 	else
 		dd if=/dev/zero bs=4096 count=$fsize 2>/dev/null | openssl enc -aes-256-ctr -pass pass:"$(dd if=/dev/urandom bs=128 count=1 2>/dev/null | base64)" -nosalt > $file_name 2>/dev/null
 	fi
